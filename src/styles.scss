@@ -1,0 +1,326 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.container
+{
+  max-height: 500px;
+  overflow: auto;
+}
+
+.mat-drawer-inner-container, .mat-sidenav-content{
+  overflow: hidden !important;
+}
+
+.no-padding-list .mat-list-item-content{
+  padding: 0 !important;
+}
+
+.example-spacer {
+  flex: 1 auto;
+}
+
+.m-0
+{
+  margin: 0px;
+}
+
+.mt-1
+{
+  margin-top: 2rem;
+}
+
+.mt-05
+{
+  margin-top: 1rem;
+}
+
+.mb-1
+{
+  margin-bottom: 2rem;
+}
+
+.mr-1
+{
+  margin-right: 2rem;
+}
+
+.ml-1
+{
+  margin-left: 2rem;
+}
+
+.mr-05
+{
+  margin-right: 1rem;
+}
+
+button.mr-05
+{
+  margin-right: 1rem !important;
+}
+
+.mat-margin-right
+{
+  .mat-form-field:first-child, .mat-form-field + .mat-form-field:not(:last-child)
+  {
+    margin-right: 1rem;
+  }
+
+}
+
+[mat-raised-button].reduce-left-pad{
+  padding-left: 10px
+}
+
+[mat-raised-button].reduce-right-pad{
+  padding-right: 10px
+}
+
+.flex
+{
+  display: flex !important;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+}
+
+.align-right{
+  justify-content: flex-end;
+}
+
+.align-left{
+  justify-content: flex-start;
+}
+
+.flex-right
+{
+  @extend .flex;
+  @extend .align-right;
+}
+
+.flex-title
+{
+  @extend .flex;
+  width: 100%;
+  margin-bottom: 5px !important;
+}
+
+.flex-space{
+
+  @extend .flex;
+  width: 100%;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 5px !important;
+
+  mat-form-field{
+    width: 49% !important;
+  }
+
+  .space-full{
+    width: 100% !important;
+  }
+
+  .space-1{
+    width: 9% !important;
+    min-width: 100px;
+    & > button {
+      width: 100%;
+    }
+  }
+
+  .space-1-5{
+    width: 14% !important; 
+  }
+
+  .space-full-1-5{
+    width: 15% !important; 
+  }
+
+  .space-2{
+    width: 19% !important;
+  }
+
+  .space-3{
+    width: 29% !important;
+  }
+  
+  .space-6{
+    width: 59% !important;
+  }
+
+  .space-7{
+    width: 69% !important;
+  }
+
+  .space-8{
+    width: 79% !important; 
+  }
+
+  .space-8-5{
+    width: 84% !important; 
+  }
+
+  .space-full-8-5{
+    width: 85% !important; 
+  }
+
+  .space-9{
+    width: 89% !important;
+  }
+
+  mat-autocomplete{
+    display: none;
+  }
+
+  &.flex-space-sm{
+    flex-direction: column;
+  
+    mat-form-field{
+      width: 100% !important;
+    }
+  }
+}
+
+.flex-space:last-child{
+  margin-bottom: 0px !important;
+}
+
+.flex-space-col{
+  @extend .flex-space;  
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+
+  & > div{
+    width: 100%;
+  }
+
+  .space-full{
+    width: 100% !important;
+  }
+
+}
+
+mat-paginator
+{
+  width: 100%;
+  bottom: 0px;
+  position: sticky;
+  z-index: 100;
+}
+
+table
+{
+  width: 100%;
+}
+
+th.mat-header-cell
+{
+  font-size: 0.9rem;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: bold;
+  color: black;
+}
+
+.mat-header-row, .mat-footer-row {
+  height: 40px !important;
+}
+
+.mat-row {
+  height: 25px !important;
+}
+
+.mat-cell{
+  padding: 0px !important;
+}
+
+.mat-row > .mat-cell:nth-child(1){
+  padding-left: 24px !important;
+}
+
+.mat-row > .mat-cell:last-child{
+  padding-right: 24px !important;
+}
+
+.table-responsive {
+
+  .mat-table {
+      width: 100%;
+      overflow-x: auto;
+  }
+
+}
+
+.align-right .mat-sort-header-container{
+  justify-content: flex-end;
+}
+
+.align-left .mat-sort-header-container{
+  justify-content: flex-start;
+}
+
+.mat-icon{
+  font-size: 22px;
+}
+
+.mat-icon-button {
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+}
+
+.rotate-180{
+  transform: rotate(180deg);
+}
+
+/*
+td.mat-cell, td.mat-footer-cell
+{
+  word-wrap: break-word;
+  word-break: break-all;
+}
+*/
+.cus-readonly
+{    
+  background-color: gainsboro;
+}
+
+.error{
+  color: red;
+}
+
+.mat-form-field-flex > .mat-form-field-infix{
+  padding: 0.3em 0px !important;
+}
+
+.mat-remove-top-border .mat-form-field-flex > .mat-form-field-infix{
+  border-top-width: 0.2em;
+}
+
+// .mat-form-field-label-wrapper{
+//   top: -1.5em;
+// }
+
+// .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
+//   transform: translateY(-1.1em) scale(.75);
+//   width: 133.33333%;
+// }
+
+/* .table-container
+{
+    width: 100%;
+      overflow-x: auto;
+
+    .mat-table {
+        
+        width: 100%;
+        
+    }
+
+    td, th{
+        padding: 5px 15px !important;
+    }
+} */
