@@ -19,7 +19,7 @@ import { MODULE_TYPE } from '../constants';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  
+
   @ViewChild(MatSidenav)  public sidenav: MatSidenav;
 
   @ViewChild('contentDiv') contentDiv: ElementRef;

@@ -1,47 +1,51 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   Inject,
   OnInit,
   QueryList,
   ViewChildren,
-} from "@angular/core";
+} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
-} from "@angular/forms";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { Observable } from "rxjs";
+} from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
   map,
   startWith,
-} from "rxjs/operators";
-import { GeneralVoucher, Account } from "../../../data-model";
-import { AlertService } from "../../alert";
-import { AuthService, GeneralVouchersService } from "../../../services";
-import { DateValidator } from "../../../utils/date-validate";
-import { getDefaultDate } from "../../../utils/number-only.directive";
-import { Constants } from "app/constants";
+} from 'rxjs/operators';
+import { GeneralVoucher, Account } from '../../../data-model';
+import { AlertService } from '../../alert';
+import { AuthService, GeneralVouchersService } from '../../../services';
+import { DateValidator } from '../../../utils/date-validate';
+import { getDefaultDate } from '../../../utils/number-only.directive';
+import { Constants } from 'app/constants';
+import { MatInput } from '@angular/material/input';
 
 @Component({
-  selector: "app-gen-voucher-details",
-  templateUrl: "./gen-voucher-details.component.html",
-  styleUrls: ["./gen-voucher-details.component.scss"],
+  selector: 'app-gen-voucher-details',
+  templateUrl: './gen-voucher-details.component.html',
+  styleUrls: ['./gen-voucher-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GenVoucherDetailsComponent implements OnInit {
-  @ViewChildren("firmName") firmNameFldsList: QueryList<ElementRef>;
+  @ViewChildren('firmName') firmNameFldsList!: QueryList<ElementRef>;
+  @ViewChildren('code') codeFldsList!: QueryList<MatInput>;
 
   public genVouchDtlsForm: FormGroup;
-  public pageMode = "";
+  public pageMode = '';
   public isCreateMode = false;
   filteredOptions: Observable<Account[]>[] = [];
 
-  public defaultAmount = "0.00";
+  public defaultAmount = '0.00';
   public defaultDate = getDefaultDate();
   private shopsList: Account[] = [];
   public inProgress = false;
@@ -66,7 +70,7 @@ export class GenVoucherDetailsComponent implements OnInit {
     this.shopsList = this.data.accountList;
 
     this.genVouchDtlsForm = this.fb.group({
-      _id: [""],
+      _id: [''],
       No: [
         this.data.generalVoucherNumber,
         [Validators.required, Validators.maxLength(50)],
@@ -88,7 +92,7 @@ export class GenVoucherDetailsComponent implements OnInit {
       const listSize = this.data.details.vouchList.length;
 
       for (let i = 0; i < listSize; i++) {
-        this.addRecord();
+        this.addRecord(false);
       }
 
       setTimeout(() => {
@@ -97,38 +101,38 @@ export class GenVoucherDetailsComponent implements OnInit {
         const firmNameArr = this.firmNameFldsList.toArray();
         this.vouchList.controls.forEach((group: FormGroup, index) => {
           this.validateNSetCode(
-            group.get("code").value,
-            group.get("code") as FormControl,
+            group.get('code').value,
+            group.get('code') as FormControl,
             firmNameArr[index].nativeElement
           );
         });
       });
     } else {
-      this.addRecord();
+      this.addRecord(false);
     }
   }
 
   get No() {
-    return this.genVouchDtlsForm.get("No") as FormControl;
+    return this.genVouchDtlsForm.get('No') as FormControl;
   }
   get date() {
-    return this.genVouchDtlsForm.get("date") as FormControl;
+    return this.genVouchDtlsForm.get('date') as FormControl;
   }
   get vouchList() {
-    return this.genVouchDtlsForm.get("vouchList") as FormArray;
+    return this.genVouchDtlsForm.get('vouchList') as FormArray;
   }
   get totDbAmt() {
-    return this.genVouchDtlsForm.get("totDbAmt") as FormControl;
+    return this.genVouchDtlsForm.get('totDbAmt') as FormControl;
   }
   get totCrAmt() {
-    return this.genVouchDtlsForm.get("totCrAmt") as FormControl;
+    return this.genVouchDtlsForm.get('totCrAmt') as FormControl;
   }
 
   getNewListFormGroup(): FormGroup {
     const arrayControl = this.fb.group({
-      _id: [""],
-      code: ["", [Validators.required, Validators.maxLength(10)]],
-      desc: ["", [Validators.required, Validators.maxLength(50)]],
+      _id: [''],
+      code: ['', [Validators.required, Validators.maxLength(10)]],
+      desc: ['', [Validators.required, Validators.maxLength(50)]],
       dbAmt: [this.defaultAmount, Validators.maxLength(15)],
       crAmt: [this.defaultAmount, Validators.maxLength(15)],
     });
@@ -136,15 +140,21 @@ export class GenVoucherDetailsComponent implements OnInit {
     return arrayControl;
   }
 
-  addRecord() {
+  addRecord(focusField: boolean) {
     this.vouchList.push(this.getNewListFormGroup());
     this.manageAutoComplete(this.vouchList.controls.length - 1);
+
+    if (focusField) {
+      setTimeout(() => {
+        this.codeFldsList.last.focus();
+      }, 0);
+    }
   }
 
   removeRecord(index: number) {
     if (!this.isCreateMode) {
       const id = ((this.vouchList.at(index) as FormGroup).get(
-        "_id"
+        '_id'
       ) as FormControl).value;
 
       if (id.length > 0) {
@@ -154,6 +164,10 @@ export class GenVoucherDetailsComponent implements OnInit {
 
     this.vouchList.removeAt(index);
     this.updateTotalAmount();
+
+    setTimeout(() => {
+      this.codeFldsList.last.focus();
+    }, 0);
   }
 
   updateTotalAmount() {
@@ -162,10 +176,10 @@ export class GenVoucherDetailsComponent implements OnInit {
 
     this.vouchList.controls.forEach((group: FormGroup) => {
       totalDbAmt += this.getNumberValue(
-        (group.get("dbAmt") as FormControl).value
+        (group.get('dbAmt') as FormControl).value
       );
       totalCrAmt += this.getNumberValue(
-        (group.get("crAmt") as FormControl).value
+        (group.get('crAmt') as FormControl).value
       );
     });
 
@@ -188,11 +202,11 @@ export class GenVoucherDetailsComponent implements OnInit {
   manageAutoComplete(index: number) {
     this.filteredOptions[index] = this.vouchList
       .at(index)
-      .get("code")
+      .get('code')
       .valueChanges.pipe(
+        startWith(''),
         debounceTime(300),
         distinctUntilChanged(),
-        startWith(""),
         map((value) => (value ? this._filter(value) : this.shopsList.slice()))
       );
   }
@@ -202,16 +216,19 @@ export class GenVoucherDetailsComponent implements OnInit {
     control: FormControl,
     firmNameFld: HTMLInputElement
   ) {
-    firmNameFld.value = "";
+    firmNameFld.value = '';
 
-    const shop = this.shopsList.find(
-      (x) => x.code.toLowerCase() === code.toLowerCase()
-    );
-    if (shop) {
-      firmNameFld.value = shop.firmName;
-    } else {
-      control.setErrors({ InvalidCode: true });
+    if (code) {
+      const shop = this.shopsList.find(
+        (x) => x.code.toLowerCase() === code.toLowerCase()
+      );
+      if (shop) {
+        firmNameFld.value = shop.firmName;
+        return;
+      }
     }
+
+    control.setErrors({ InvalidCode: true });
   }
 
   private _filter(value: string): Account[] {

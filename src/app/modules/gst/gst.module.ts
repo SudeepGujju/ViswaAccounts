@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { GstRoutingModule } from './gst-routing.module';
 import { GstReportsComponent } from './gst-reports/gst-reports.component';
 import { MaterialModule } from '../material.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -13,6 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   ],
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     MaterialModule,
     GstRoutingModule

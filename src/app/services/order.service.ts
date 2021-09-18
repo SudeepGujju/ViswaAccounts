@@ -4,7 +4,9 @@ import { Order } from '../data-model';
 import { purchaseUrl } from 'app/urlConfig';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class OrderService {
 
   constructor(private http: HttpClient) { }

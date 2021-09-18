@@ -19,7 +19,7 @@ export class NumberDirective {
 
   @HostListener('input', ['$event']) onInputChange(event) {
 
-    let finalValue = this.control.control.value;
+    let finalValue = event.target.value;
 
     let numberRegExp;
     if (this.numbersOnly.allowDecimal && this.numbersOnly.allowNegative) {
@@ -62,7 +62,7 @@ export class NumberDirective {
       return;
     }
 
-    const initalValue = this.control.control.value; // this._el.nativeElement.value;
+    const initalValue = event.target.value; // this._el.nativeElement.value;
 
     if (this.numbersOnly.allowDecimal) {
       if (initalValue && !isNaN(initalValue)) {
@@ -94,7 +94,7 @@ export class DateDirective {
 
   @HostListener('input', ['$event']) onInputChange(event) {
 
-    const initalValue = this.control.control.value; // this._el.nativeElement.value;
+    const initalValue = event.target.value; // this._el.nativeElement.value;
 
     this.control.control.setValue(formatDate(initalValue));
 /*
@@ -170,10 +170,10 @@ export class UpperCaseDirective {
 
   @HostListener('input', ['$event'])onInputChange(event) {
 
-    const value = this.control.control.value;
+    const value = event.target.value;
 
     if (value && value !== value.toUpperCase()) {
-      this.control.control.setValue(this.control.control.value.toUpperCase());
+      this.control.control.setValue(value.toUpperCase());
     }
   }
 }

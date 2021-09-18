@@ -20,6 +20,7 @@ export class UsersListComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  public filterValue = '';
   public usersListDS: MatTableDataSource<User>;
   public columnsToDisplay: string[] = ['loginID', 'username', 'password', 'status'];
 
@@ -54,8 +55,10 @@ export class UsersListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userListUpdateSubscription.unsubscribe();
   }
 
-  applyFilter(value: string) {
-    this.usersListDS.filter = value;
+  applyFilter() {
+    this.usersListDS.filter = this.filterValue;
+
+    this.paginator.firstPage();
   }
 
   trackList(index, data) {

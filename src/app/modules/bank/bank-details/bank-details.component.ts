@@ -138,16 +138,16 @@ export class BankDetailsComponent implements OnInit {
     });
 
     this.filteredOptions[0] = this.bankCode.valueChanges.pipe(
+      startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
-      startWith(''),
       map((value) => (value ? this._filter(value) : this.shopsList.slice()))
     );
 
     this.filteredOptions[1] = this.toCode.valueChanges.pipe(
+      startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
-      startWith(''),
       map((value) => (value ? this._filter(value) : this.shopsList.slice()))
     );
   }
@@ -195,21 +195,23 @@ export class BankDetailsComponent implements OnInit {
 
     firmNameFld.value = '';
 
-    code = code.trim().toLowerCase();
+    if (code){
+      code = code.trim().toLowerCase();
 
-    if (code.length > 0) {
-      if (firmNameFld.id == 'tofirmName' && code == '1000') {
-        control.setErrors({ CodeNotAllowed: true });
-        return false;
-      }
+      if (code.length > 0) {
+        if (firmNameFld.id === 'tofirmName' && code === '1000') {
+          control.setErrors({ CodeNotAllowed: true });
+          return;
+        }
 
-      const shop = this.shopsList.find(
-        (x) => x.code.toLowerCase() === code.toLowerCase()
-      );
+        const shop = this.shopsList.find(
+          (x) => x.code.toLowerCase() === code
+        );
 
-      if (shop) {
-        firmNameFld.value = shop.firmName;
-        return true;
+        if (shop) {
+          firmNameFld.value = shop.firmName;
+          return;
+        }
       }
     }
 

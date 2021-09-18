@@ -5,7 +5,9 @@ import { Product } from '../data-model/';
 import { productUploadUrl, productSearchUrl, productUserSearchUrl } from 'app/urlConfig';
 import { environment } from 'environments/environment';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ProductService {
 
   constructor(private http: HttpClient) { }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { GeneralVoucherRoutingModule } from './general-voucher-routing.module';
 import { GenVoucherListComponent } from './gen-voucher-list/gen-voucher-list.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import { GenVoucherDetailsComponent } from './gen-voucher-details/gen-voucher-details.component';
 import { GenVoucherDetailsDialogComponent } from './gen-voucher-details/gen-voucher-details-dialog.component';
@@ -19,6 +19,7 @@ import { NgxMaskModule } from 'ngx-mask';
   ],
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     MaterialModule,
     GeneralVoucherRoutingModule,

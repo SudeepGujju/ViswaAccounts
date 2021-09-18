@@ -16,7 +16,7 @@
                 Select valid shop
             </mat-error>
         </mat-form-field>
-        <mat-autocomplete #autoUser="matAutocomplete" [autoActiveFirstOption]="true" (optionActivated)="validateNStockistID($event.option.value)" (optionSelected)="validateNStockistID($event.option.value)">
+        <mat-autocomplete #autoUser="matAutocomplete" [autoActiveFirstOption]="true" (optionActivated)="validateNStockistID($event.option?.value)" (optionSelected)="validateNStockistID($event.option?.value)">
             <mat-option *ngFor="let user of filteredOption | async" [value]="user.username">{{user.username}}</mat-option>
         </mat-autocomplete>
     </div>

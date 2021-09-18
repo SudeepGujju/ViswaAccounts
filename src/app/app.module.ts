@@ -18,7 +18,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
 import { registerLocaleData } from '@angular/common';
-import localeIn from "@angular/common/locales/en-IN";
+import localeIn from '@angular/common/locales/en-IN';
 
 registerLocaleData(localeIn, 'en-IN');
 

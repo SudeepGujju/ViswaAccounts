@@ -6,7 +6,6 @@ import { AuthGuard } from './guards';
 const routes: Routes = [
   {
     path: 'login',
-    canActivate: [AuthGuard],
     canLoad: [AuthGuard],
     loadChildren: () => import('./modules/login/login.module').then( m => m.LoginModule),
   },
@@ -15,6 +14,12 @@ const routes: Routes = [
     canLoad: [AuthGuard],
     loadChildren: () => import('./modules/group/group.module').then( m => m.GroupModule),
     outlet: 'dialog'
+  },
+  {
+    path: 'sub-dialog/group',
+    canLoad: [AuthGuard],
+    loadChildren: () => import('./modules/group/group.module').then( m => m.GroupModule),
+    outlet: 'sub-dialog'
   },
   {
     path: 'group',

@@ -9,20 +9,21 @@ import { AlertService } from 'app/modules';
 @Component({
   selector: 'account-open-bal-list',
   templateUrl: './account-open-bal-list.component.html',
-  styleUrls: ['./account-open-bal-list.component.scss']
+  styleUrls: ['./account-open-bal-list.component.scss'],
 })
 export class AccountOpenBalListComponent implements OnInit, AfterViewInit {
-
   // @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<Account>;
+
+  public filterValue = '';
 
   private exportColumns: string[] = [
     'code',
     'firmName',
     'town',
     'credit',
-    'debit'
+    'debit',
   ];
 
   public columnsToDisplay: string[] = [
@@ -30,7 +31,7 @@ export class AccountOpenBalListComponent implements OnInit, AfterViewInit {
     'firmName',
     'town',
     'credit',
-    'debit'
+    'debit',
   ];
 
   public totalCredit = 0;
@@ -38,7 +39,12 @@ export class AccountOpenBalListComponent implements OnInit, AfterViewInit {
 
   public accountOpenBalListDS: MatTableDataSource<Account>;
 
-  constructor(private accountSrvc: AccountService, private alrtSrvc: AlertService, private exportSrvc: ExportService, private authSrvc: AuthService) { }
+  constructor(
+    private accountSrvc: AccountService,
+    private alrtSrvc: AlertService,
+    private exportSrvc: ExportService,
+    private authSrvc: AuthService
+  ) {}
 
   ngOnInit() {
     this.accountOpenBalListDS = new MatTableDataSource<Account>();
@@ -54,8 +60,8 @@ export class AccountOpenBalListComponent implements OnInit, AfterViewInit {
     return data.code;
   }
 
-  applyFilter(value: string) {
-    this.accountOpenBalListDS.filter = value;
+  applyFilter() {
+    this.accountOpenBalListDS.filter = this.filterValue;
   }
 
   exportData() {
@@ -66,7 +72,7 @@ export class AccountOpenBalListComponent implements OnInit, AfterViewInit {
       firmName: 'Firm Name',
       town: 'Town',
       credit: 'Credit',
-      debit: 'Debit'
+      debit: 'Debit',
     };
 
     const footer = {
@@ -74,13 +80,16 @@ export class AccountOpenBalListComponent implements OnInit, AfterViewInit {
       firmName: '',
       town: '',
       credit: this.totalCredit,
-      debit: this.totalDebit
+      debit: this.totalDebit,
     };
 
-    const data = [].concat(headings).concat(this.accountOpenBalListDS.filteredData).concat(footer);
+    const data = []
+      .concat(headings)
+      .concat(this.accountOpenBalListDS.filteredData)
+      .concat(footer);
     this.exportSrvc.exportAsExcelFile(data, filename, {
       filterKeys: this.exportColumns,
-      skipHeader: true
+      skipHeader: true,
     });
   }
 
@@ -96,8 +105,7 @@ export class AccountOpenBalListComponent implements OnInit, AfterViewInit {
   }
 
   formatData(records: Account[]) {
-
-    records.forEach( (value, idx) => {
+    records.forEach((value, idx) => {
       value.credit = value.credit * -1;
 
       this.totalCredit = +this.totalCredit.toFixed(2) + value.credit;

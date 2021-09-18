@@ -1,5 +1,5 @@
 <mat-form-field style="width:120px" class="mat-remove-top-border">
-    <input matInput type="text" [formControl]="control" mask="099" style="text-align: center;">
+    <input type="text" matInput [formControl]="control" mask="099" style="text-align: center;">
     <button type="button" mat-icon-button matPrefix (click)="decrement()"><mat-icon>remove</mat-icon></button>
     <button type="button" mat-icon-button matSuffix (click)="increment()"><mat-icon>add</mat-icon></button>
     <mat-error *ngIf="control.hasError('required')">

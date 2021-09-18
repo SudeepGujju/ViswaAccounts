@@ -51,7 +51,7 @@ export class InventoryDetailsComponent implements OnInit, OnDestroy {
       this.isCreateMode = true;
     }
 
-    this.shopsList = this.data.accountList;
+    this.shopsList = this.data.accountList || [];
 
     this.inventoryDtlsForm = this.fb.group({
       _id: [''],
@@ -80,17 +80,17 @@ export class InventoryDetailsComponent implements OnInit, OnDestroy {
 
     this.filteredFromOptions = this.fromCode.valueChanges
         .pipe(
+          startWith(''),
           debounceTime(300),
           distinctUntilChanged(),
-          startWith(''),
           map(value => value ? this._filter(value) : this.shopsList.slice())
         );
 
     this.filteredToOptions = this.toCode.valueChanges
         .pipe(
+          startWith(''),
           debounceTime(300),
           distinctUntilChanged(),
-          startWith(''),
           map(value => value ? this._filter(value) : this.shopsList.slice())
         );
 
@@ -130,6 +130,8 @@ export class InventoryDetailsComponent implements OnInit, OnDestroy {
         this.validateNSetToCode(this.data.details.toCode);
       });
 
+      this.invntryType.disable();
+
     }
   }
 
@@ -138,37 +140,41 @@ export class InventoryDetailsComponent implements OnInit, OnDestroy {
   }
 
   onSelectFromCode({option}) {
-    this.validateNSetFromCode(option.value);
+    this.validateNSetFromCode(option?.value);
   }
 
   onSelectToCode({option}) {
-    this.validateNSetToCode(option.value);
+    this.validateNSetToCode(option?.value);
   }
 
   validateNSetFromCode(code: string) {
 
     this.fromCodeFirmEle.nativeElement.value = '';
 
-    const shop = this.shopsList.find(x => x.code.toLowerCase() === code.toLowerCase());
-    if (shop) {
-      this.fromCodeFirmEle.nativeElement.value = shop.firmName;
-    } else {
-      this.fromCode.setErrors({InvalidCode: true});
+    if (code){
+      const shop = this.shopsList.find(x => x.code.toLowerCase() === code.toLowerCase());
+      if (shop) {
+        this.fromCodeFirmEle.nativeElement.value = shop.firmName;
+        return;
+      }
     }
 
+    this.fromCode.setErrors({InvalidCode: true});
   }
 
   validateNSetToCode(code: string) {
 
     this.toCodeFirmEle.nativeElement.value = '';
 
-    const shop = this.shopsList.find(x => x.code.toLowerCase() === code.toLowerCase());
-    if (shop) {
-      this.toCodeFirmEle.nativeElement.value = shop.firmName;
-    } else {
-      this.toCode.setErrors({InvalidCode: true});
+    if (code){
+      const shop = this.shopsList.find(x => x.code.toLowerCase() === code.toLowerCase());
+      if (shop) {
+        this.toCodeFirmEle.nativeElement.value = shop.firmName;
+        return;
+      }
     }
 
+    this.toCode.setErrors({InvalidCode: true});
   }
 
   private _filter(value: string): Account[] {
@@ -360,7 +366,7 @@ export class InventoryDetailsComponent implements OnInit, OnDestroy {
 
     this.inProgress = true;
 
-    const inventory: Inventory = Object.assign({}, this.inventoryDtlsForm.value);
+    const inventory: Inventory = Object.assign({}, this.inventoryDtlsForm.getRawValue()); // Using getRawValue() because disabled fields values will not included in value
 
     const recordID = inventory._id;
 

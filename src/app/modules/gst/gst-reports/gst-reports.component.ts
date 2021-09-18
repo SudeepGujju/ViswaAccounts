@@ -27,6 +27,8 @@ export class GstReportsComponent implements OnInit {
     }
   }
 
+  public filterValue = '';
+
   public filesList: string[] = [];
 
   public tableDS: MatTableDataSource<any> = null;
@@ -122,6 +124,8 @@ export class GstReportsComponent implements OnInit {
     //     return matchFilter.every(boolean);
     //   }
 
+      this.applyFilter();
+
     }
   }
 
@@ -146,8 +150,12 @@ export class GstReportsComponent implements OnInit {
   //   }
   // }
 
-  applyFilter(value: string) {
-    this.tableDS.filter = value;
+  applyFilter() {
+    this.tableDS.filter = this.filterValue;
+
+    if (this.matPaginator) {
+      this.matPaginator.firstPage();
+    }
   }
 
   destroyTable() {

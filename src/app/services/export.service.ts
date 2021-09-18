@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as FileSaver from 'file-saver';
+import * as FileSaver from 'file-saver-es';
 import * as XLSX from 'xlsx';
 
 @Injectable({
@@ -62,14 +62,14 @@ export class ExportService {
   private filterColumns(tableDiv) {
     const table = tableDiv.getElementsByTagName('table')[0].cloneNode(true);
 
-    for (let i = 0; i < table.rows.length; i++) {
-      const cells = table.rows[i].cells;
+    for (const row of table.rows){
+      const cells = row.cells;
 
-      for (let j = 0; j < cells.length; j++) {
-        const exportCell = cells[j].getAttribute('data-export') || 'true';
+      for (const cell of cells) {
+        const exportCell = cell.getAttribute('data-export') || 'true';
 
         if (exportCell == 'false') {
-          cells[j].remove();
+          cell.remove();
         }
       }
     }

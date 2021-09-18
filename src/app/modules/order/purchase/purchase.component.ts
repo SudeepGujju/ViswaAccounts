@@ -53,9 +53,9 @@ export class PurchaseComponent implements OnInit {
     this.productNameControl = new FormControl('');
 
     this.filteredOption = this.stockistName.valueChanges.pipe(
+      startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
-      startWith(''),
       map((value) => (value ? this._filter(value) : this.users.slice()))
     );
 
@@ -96,15 +96,19 @@ export class PurchaseComponent implements OnInit {
   }
 
   validateNStockistID(username) {
-    const user: any = this.users.find( x => x.username.toLowerCase() == username.toLowerCase());
 
-    if (user) {
-      this.stockistId.setValue(user._id);
-    } else {
-      this.stockistId.setValue('');
-      this.stockistName.setErrors({InvalidShop: true});
+    if (username){
+      const user: any = this.users.find( x => x.username.toLowerCase() == username.toLowerCase());
+
+      if (user) {
+        this.stockistId.setValue(user._id);
+      }
+
+      this.delteAllProducts();
     }
 
+    this.stockistId.setValue('');
+    this.stockistName.setErrors({InvalidShop: true});
     this.delteAllProducts();
   }
 
@@ -115,22 +119,22 @@ export class PurchaseComponent implements OnInit {
   nextStage() {
 
     switch (this.currentStage) {
-      case 1: { 
-                if(this.stockistName.valid) {this.currentStage = this.currentStage + 1};
+      case 1: {
+                if (this.stockistName.valid) {this.currentStage = this.currentStage + 1; }
               }
               break;
       case 2: {
-                if(this.products.valid) {this.currentStage = this.currentStage + 1};
+                if (this.products.valid) {this.currentStage = this.currentStage + 1; }
               }
               break;
       case 3: {
                 this.alertSrvc.showConfirmAlert('Do you want to place order?')
                                 .afterClosed()
-                                .subscribe( (confirmation) => { 
-                                  if(confirmation){ 
+                                .subscribe( (confirmation) => {
+                                  if (confirmation){
                                     this.saveOrder();
                                   }
-                                }); 
+                                });
               }
               break;
     }

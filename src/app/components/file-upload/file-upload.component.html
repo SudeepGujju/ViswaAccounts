@@ -1,4 +1,4 @@
-<input type="file" #file style="display: none;" (change)="onFileSelect()" multiple>
+<input type="file" #file style="display: none;" accept=".csv" multiple (change)="onFileSelect()">
 <div class="flex-title" mat-dialog-title>
     <div>FILE - Upload</div>
     <div mat-dialog-close *ngIf="uploadStatus !== 1">

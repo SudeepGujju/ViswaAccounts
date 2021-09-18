@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -20,11 +21,13 @@ import { Subscription } from 'rxjs';
   templateUrl: './gen-voucher-list.component.html',
   styleUrls: ['./gen-voucher-list.component.scss'],
 })
-export class GenVoucherListComponent implements OnInit, AfterViewInit {
-
+export class GenVoucherListComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  public filterValue = '';
   public genVoucherListDS: MatTableDataSource<GeneralVoucher>;
   public exportColumns: string[] = ['No', 'date', 'totDbAmt', 'totCrAmt'];
   public columnsToDisplay: string[] = ['No', 'date', 'totDbAmt', 'totCrAmt'];
@@ -54,9 +57,10 @@ export class GenVoucherListComponent implements OnInit, AfterViewInit {
     this.genVoucherListDS = new MatTableDataSource<GeneralVoucher>();
     this.refresh();
 
-    this.generalVoucherListUpdateSubscription = this.genVouchSrvc.listUpdate$.subscribe( () => {
-      this.refresh();
-    });
+    this.generalVoucherListUpdateSubscription =
+      this.genVouchSrvc.listUpdate$.subscribe(() => {
+        this.refresh();
+      });
   }
 
   ngAfterViewInit() {
@@ -64,12 +68,14 @@ export class GenVoucherListComponent implements OnInit, AfterViewInit {
     this.genVoucherListDS.sort = this.sort;
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.generalVoucherListUpdateSubscription.unsubscribe();
   }
 
-  applyFilter(value: string) {
-    this.genVoucherListDS.filter = value;
+  applyFilter() {
+    this.genVoucherListDS.filter = this.filterValue;
+
+    this.paginator.firstPage();
   }
 
   trackList(index, data) {
@@ -98,7 +104,16 @@ export class GenVoucherListComponent implements OnInit, AfterViewInit {
   }
 
   edit(genVoucher: GeneralVoucher) {
-    this.router.navigate( [{outlets: { dialog: ['dialog', 'general-voucher', 'edit', genVoucher._id]}}], {relativeTo: this.route.root, skipLocationChange: true} );
+    this.router.navigate(
+      [
+        {
+          outlets: {
+            dialog: ['dialog', 'general-voucher', 'edit', genVoucher._id],
+          },
+        },
+      ],
+      { relativeTo: this.route.root, skipLocationChange: true }
+    );
   }
 
   delete(genVoucher: GeneralVoucher) {

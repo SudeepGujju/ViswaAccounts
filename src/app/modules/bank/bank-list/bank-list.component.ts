@@ -1,18 +1,32 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AlertService } from 'app/modules';
 import { Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  startWith,
+} from 'rxjs/operators';
 import { Bank, Account } from '../../../data-model';
 import { AuthService } from '../../../services/auth.service';
 import { BankService } from '../../../services/bank.service';
 import { ExportService } from '../../../services/export.service';
 import { AccountService } from '../../../services/account.service';
-import { DateValidator, FromToDateValidation } from '../../../utils/date-validate';
+import {
+  DateValidator,
+  FromToDateValidation,
+} from '../../../utils/date-validate';
 import { getDefaultDate } from '../../../utils/number-only.directive';
 import { CustomErrorStateMatcher } from '../../../utils/CustomErrorStateMatcher';
 
@@ -22,7 +36,6 @@ import { CustomErrorStateMatcher } from '../../../utils/CustomErrorStateMatcher'
   styleUrls: ['./bank-list.component.scss'],
 })
 export class BankListComponent implements OnInit, AfterViewInit {
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -42,7 +55,7 @@ export class BankListComponent implements OnInit, AfterViewInit {
     'chNo',
     'desc',
     'payment',
-    'receipt'
+    'receipt',
   ];
 
   public columnsToDisplay: string[] = [
@@ -53,7 +66,7 @@ export class BankListComponent implements OnInit, AfterViewInit {
     'chNo',
     'desc',
     'payment',
-    'receipt'
+    'receipt',
   ];
 
   public dateErrorStateMatcher: ErrorStateMatcher;
@@ -68,7 +81,6 @@ export class BankListComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-
     this.accountSrvc.getDropdownList().subscribe(
       (resp) => {
         this.shopsList = resp;
@@ -80,33 +92,35 @@ export class BankListComponent implements OnInit, AfterViewInit {
 
     this.dateErrorStateMatcher = new CustomErrorStateMatcher('errorFromToDate');
 
-    this.bankForm = this.fb.group({
-      fromDate: [
-        this.defaultDate,
-        [
-          Validators.required,
-          Validators.maxLength(14),
-          DateValidator(this.authSrvc.finYearStart, this.authSrvc.finYearEnd),
+    this.bankForm = this.fb.group(
+      {
+        fromDate: [
+          this.defaultDate,
+          [
+            Validators.required,
+            Validators.maxLength(14),
+            DateValidator(this.authSrvc.finYearStart, this.authSrvc.finYearEnd),
+          ],
         ],
-      ],
-      toDate: [
-        this.defaultDate,
-        [
-          Validators.required,
-          Validators.maxLength(14),
-          DateValidator(this.authSrvc.finYearStart, this.authSrvc.finYearEnd),
+        toDate: [
+          this.defaultDate,
+          [
+            Validators.required,
+            Validators.maxLength(14),
+            DateValidator(this.authSrvc.finYearStart, this.authSrvc.finYearEnd),
+          ],
         ],
-      ],
-      code: [''],
-    },
-    {
-      validators: [FromToDateValidation('fromDate', 'toDate')]
-    });
+        code: [''],
+      },
+      {
+        validators: [FromToDateValidation('fromDate', 'toDate')],
+      }
+    );
 
     this.filteredOption = this.code.valueChanges.pipe(
+      startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
-      startWith(''),
       map((value) => (value ? this._filter(value) : this.shopsList.slice()))
     );
 
@@ -151,14 +165,17 @@ export class BankListComponent implements OnInit, AfterViewInit {
   ) {
     firmNameFld.value = '';
 
-    const shop = this.shopsList.find(
-      (x) => x.code.toLowerCase() === code.toLowerCase()
-    );
-    if (shop) {
-      firmNameFld.value = shop.firmName;
-    } else if (code != '') {
-      control.setErrors({ InvalidCode: true });
+    if (code) {
+      const shop = this.shopsList.find(
+        (x) => x.code.toLowerCase() === code.toLowerCase()
+      );
+      if (shop) {
+        firmNameFld.value = shop.firmName;
+        return;
+      }
     }
+
+    control.setErrors({ InvalidCode: true });
   }
 
   search() {
@@ -199,13 +216,13 @@ export class BankListComponent implements OnInit, AfterViewInit {
       chNo: 'Check No',
       desc: 'Desc',
       payment: 'Payment',
-      receipt: 'Receipt'
+      receipt: 'Receipt',
     };
 
     const data = [].concat(headings).concat(this.bankListDS.filteredData);
     this.exportSrvc.exportAsExcelFile(data, filename, {
       filterKeys: this.exportColumns,
-      skipHeader: true
+      skipHeader: true,
     });
   }
 }

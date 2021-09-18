@@ -1,14 +1,35 @@
-import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, AsyncValidatorFn, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import {
+  Component,
+  ElementRef,
+  Inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable, of, Subscription, timer } from 'rxjs';
-import { catchError, map, startWith, switchMap, distinctUntilChanged, debounceTime } from 'rxjs/operators';
+import {
+  catchError,
+  map,
+  startWith,
+  switchMap,
+  distinctUntilChanged,
+  debounceTime,
+} from 'rxjs/operators';
 import { DisplayService, AccountService, GroupService } from 'app/services';
-import { DialogService } from 'app/services/dialog.service';
 import { Group, Account } from 'app/data-model';
 import { AlertService } from 'app/modules/alert';
 import { Constants } from 'app/constants';
-
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-account-details',
@@ -16,7 +37,6 @@ import { Constants } from 'app/constants';
   styleUrls: ['./account-details.component.scss'],
 })
 export class AccountDetailsComponent implements OnInit, OnDestroy {
-
   public accountDtlsForm: FormGroup;
   public pageMode = '';
   public isCreateMode = false;
@@ -27,18 +47,30 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
   public isSmallScrn = false;
   private isSmallScrnSubscription: Subscription;
   private groupsList: Group[] = [];
+  private groupListUpdateSubscription: Subscription;
 
   @ViewChild('groupCodeFirmName') groupCodeFirmEle: ElementRef;
 
-  constructor(public fb: FormBuilder, private dispSrvc: DisplayService, private accountSrvc: AccountService, private grpSrvc: GroupService, private alrtSrvc: AlertService, private dialogRef: MatDialogRef<AccountDetailsComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
+  constructor(
+    public fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute,
+    private dispSrvc: DisplayService,
+    private accountSrvc: AccountService,
+    private grpSrvc: GroupService,
+    private alrtSrvc: AlertService,
+    private dialogRef: MatDialogRef<AccountDetailsComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
 
   ngOnInit() {
-
     this.groupsList = this.data.groupList || [];
 
     this.isSmallScrnSubscription = this.dispSrvc.isHandSet$.subscribe(
-      (ismall) => { this.isSmallScrn = ismall; },
-      (error) => { }
+      (ismall) => {
+        this.isSmallScrn = ismall;
+      },
+      (error) => {}
     );
 
     this.pageMode = Constants.PageModeMapping(this.data.pageMode);
@@ -49,11 +81,13 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
 
     this.accountDtlsForm = this.fb.group({
       _id: [''],
-      code: ['',
+      code: [
+        '',
         {
           validators: [Validators.required, Validators.maxLength(10)],
-          asyncValidators: (this.isCreateMode ? [this.isCodeUnique()] : [])
-        }],
+          asyncValidators: this.isCreateMode ? [this.isCodeUnique()] : [],
+        },
+      ],
       firmName: ['', [Validators.required, Validators.maxLength(50)]],
       proprietor: ['', [Validators.maxLength(50)]],
       phone: ['', [Validators.minLength(10), Validators.maxLength(10)]],
@@ -66,51 +100,65 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
       gst: ['', [Validators.minLength(2), Validators.maxLength(15)]],
       mailid: ['', [Validators.email, Validators.maxLength(50)]],
       opngBalAmt: [this.defaultAmount, Validators.maxLength(15)],
-      groupCode: ['', [Validators.required, Validators.maxLength(10)]]
+      groupCode: ['', [Validators.required, Validators.maxLength(10)]],
     });
 
     if (!this.isCreateMode) {
-
       this.accountDtlsForm.patchValue(this.data.details);
       setTimeout(() => {
         this.validateNSetgroupCode(this.data.details.groupCode);
       });
     }
 
-    this.filteredGroupOptions = this.groupCode.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        startWith(''),
-        map(value => value ? this._filter(value) : this.groupsList.slice())
-      );
+    this.filteredGroupOptions = this.groupCode.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      map((value) => (value ? this._filter(value) : this.groupsList.slice()))
+    );
+
+    this.groupListUpdateSubscription = this.grpSrvc.listUpdate$.pipe( switchMap( _ => this.grpSrvc.getDropdownList() ) ).subscribe(
+      (groupsList) => {
+        this.groupsList = groupsList;
+      },
+      () => {}
+    );
   }
 
   ngOnDestroy() {
     this.isSmallScrnSubscription.unsubscribe();
+    this.groupListUpdateSubscription.unsubscribe();
   }
 
   onSelectgroupCode({ option }) {
-    this.validateNSetgroupCode(option.value);
+    this.validateNSetgroupCode(option?.value);
   }
 
   validateNSetgroupCode(code: string) {
-
     this.groupCodeFirmEle.nativeElement.value = '';
 
-    const group = this.groupsList.find(x => x.code.toLowerCase() === code.toLowerCase());
-    if (group) {
-      this.groupCodeFirmEle.nativeElement.value = group.name;
-    } else {
-      this.groupCode.setErrors({ InvalidCode: true });
+    if (code)
+    {
+      const group = this.groupsList.find(
+        (x) => x.code.toLowerCase() === code.toLowerCase()
+      );
+      if (group) {
+        this.groupCodeFirmEle.nativeElement.value = group.name;
+        return;
+      }
     }
 
+    this.groupCode.setErrors({ InvalidCode: true });
   }
 
   private _filter(value: string): Group[] {
     const filterValue = value.toLowerCase();
 
-    return this.groupsList.filter(group => group.name.toLowerCase().includes(filterValue) || group.code.toLowerCase().includes(filterValue));
+    return this.groupsList.filter(
+      (group) =>
+        group.name.toLowerCase().includes(filterValue) ||
+        group.code.toLowerCase().includes(filterValue)
+    );
   }
 
   get code() {
@@ -170,7 +218,6 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
   }
 
   save() {
-
     if (!this.accountDtlsForm.valid) {
       return false;
     }
@@ -180,7 +227,6 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
     } else {
       this.editAccount();
     }
-
   }
 
   createAccount() {
@@ -192,17 +238,17 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
 
     this.accountSrvc.save(account).subscribe(
       (resp) => {
-
         this.inProgress = false;
 
-        this.alrtSrvc.showSuccessAlert(resp).afterClosed().subscribe(() => {
-          this.dialogRef.close('saved');
-          this.accountSrvc.notifyToUpdateList();
-        });
-
+        this.alrtSrvc
+          .showSuccessAlert(resp)
+          .afterClosed()
+          .subscribe(() => {
+            this.dialogRef.close('saved');
+            this.accountSrvc.notifyToUpdateList();
+          });
       },
       (error) => {
-
         this.inProgress = false;
 
         if (error.includes('already exists')) {
@@ -227,14 +273,15 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
       (resp) => {
         this.inProgress = false;
 
-        this.alrtSrvc.showSuccessAlert(resp).afterClosed().subscribe(() => {
-          this.dialogRef.close('saved');
-          this.accountSrvc.notifyToUpdateList();
-        });
-
+        this.alrtSrvc
+          .showSuccessAlert(resp)
+          .afterClosed()
+          .subscribe(() => {
+            this.dialogRef.close('saved');
+            this.accountSrvc.notifyToUpdateList();
+          });
       },
       (error) => {
-
         this.inProgress = false;
         this.alrtSrvc.showErrorAlert(error);
       }
@@ -243,18 +290,23 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
 
   isCodeUnique(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-
       return timer(500).pipe(
         switchMap(() => {
           return this.accountSrvc.isCodeAvail(control.value);
         }),
-        map(resp => resp ? null : { alreadyExists: true }),
+        map((resp) => (resp ? null : { alreadyExists: true })),
         catchError(() => of(null))
       );
     };
   }
 
   createGroup() {
+
+    // TODO: Need to update groups list after dialog close.
+    this.router.navigate(
+      [{outlets: { dialog: ['dialog', 'group', 'create']}}],
+      { relativeTo: this.route.root, skipLocationChange: true }
+    );
 
     // const ref = this.dlgSrvc.openGroupDialog();
 
@@ -270,5 +322,4 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
     //   });
     // }
   }
-
 }

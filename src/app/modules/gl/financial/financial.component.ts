@@ -108,10 +108,10 @@ export class FinancialComponent implements OnInit {
     'LossAmount'
   ];
 
-  public currentReport:number = 0; // 0- ,1- ,2- ,3- ,4-
+  public currentReport = 0; // 0- ,1- ,2- ,3- ,4-
   public currentReportName = '';
-  public nextStageName = "";
-  public previousStageName = "";
+  public nextStageName = '';
+  public previousStageName = '';
 
   public profitLabel = '';
   public profitAmount = '';
@@ -222,17 +222,17 @@ export class FinancialComponent implements OnInit {
       case 0: {
 
         this.currentReportName = '';
-        this.previousStageName = "";
+        this.previousStageName = '';
 
-        this.nextStageName = "Trading";
+        this.nextStageName = 'Trading';
 
         break;
       }
       case 1: {
         this.currentReportName = 'Trading';
 
-        this.previousStageName = "Change Closing Stock";
-        this.nextStageName = "Profit And Loss";
+        this.previousStageName = 'Change Closing Stock';
+        this.nextStageName = 'Profit And Loss';
 
         this.getTradingList();
 
@@ -241,8 +241,8 @@ export class FinancialComponent implements OnInit {
       case 2: {
         this.currentReportName = 'Profit And Loss';
 
-        this.nextStageName = "Balance Sheet";
-        this.previousStageName = "Trading";
+        this.nextStageName = 'Balance Sheet';
+        this.previousStageName = 'Trading';
 
         this.getProfitNLossList();
 
@@ -251,8 +251,8 @@ export class FinancialComponent implements OnInit {
       case 3: {
         this.currentReportName = 'Balance Sheet';
 
-        this.nextStageName = "";
-        this.previousStageName = "Profit And Loss";
+        this.nextStageName = '';
+        this.previousStageName = 'Profit And Loss';
 
         this.getBalanceSheetList();
 
@@ -264,14 +264,14 @@ export class FinancialComponent implements OnInit {
 
   goToNextStage(){
 
-    this.currentReport = this.currentReport+1;
+    this.currentReport = this.currentReport + 1;
     this.gotoReport();
 
   }
 
   goToPreviousStage(){
 
-    this.currentReport = this.currentReport-1;
+    this.currentReport = this.currentReport - 1;
     this.gotoReport();
 
   }

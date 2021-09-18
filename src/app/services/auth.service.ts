@@ -33,6 +33,24 @@ export class AuthService {
       this.setFinYear(this.currentUser.finYear);
     }
 
+    window.addEventListener('storage', (event) => {
+
+      this.userStorageMaintenance(event);
+
+    }, false);
+
+  }
+
+  private userStorageMaintenance(event){
+    if( event.storageArea == localStorage ){
+
+      if(localStorage.getItem(this.CURRENT_USER))
+      {
+        window.location.href = "";
+      }
+      else
+        this.logout(true);
+    }
   }
 
   private setFinYear(finYear: string) {
@@ -97,24 +115,26 @@ export class AuthService {
 
   public logout(redirect?: boolean) {
 
-    if (redirect) {
-      this.http.post(LogoutUrl, {}, {responseType: 'text'}).subscribe(
-        () => {
-          this.dlgSrvc.closeAllDialogs();
-          this.router.navigateByUrl('/login');
-          this.clearUserDetails();
-        },
-        () => {
-          this.dlgSrvc.closeAllDialogs();
-          this.router.navigateByUrl('/login');
-          this.clearUserDetails();
-        }
-      );
-    } else {
-      this.clearUserDetails();
-    }
+    this.http.post(LogoutUrl, {}, {responseType: 'text'}).subscribe(
+      () => { this._logout(redirect) },
+      () => { this._logout(redirect) }
+    );
 
     return true;
+  }
+
+  private _logout(redirect?: boolean){
+
+    this.clearUserDetails();
+
+    if (redirect) {
+
+      this.dlgSrvc.closeAllDialogs();
+      this.router.navigateByUrl('/login');
+    }
+
+    return;
+
   }
 
   private clearUserDetails() {

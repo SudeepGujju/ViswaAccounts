@@ -18,6 +18,8 @@ export class TrailBalanceComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<any>;
 
+  public filterValue = '';
+
   public exportColumns: string[] = [
     'code',
     'firmName',
@@ -55,8 +57,8 @@ export class TrailBalanceComponent implements OnInit, AfterViewInit {
     return data.code;
   }
 
-  applyFilter(value: string) {
-    this.trailBalanceListDS.filter = value;
+  applyFilter() {
+    this.trailBalanceListDS.filter = this.filterValue;
   }
 
   exportData() {

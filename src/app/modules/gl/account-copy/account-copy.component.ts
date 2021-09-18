@@ -67,9 +67,9 @@ export class AccountCopyComponent implements OnInit {
     });
 
     this.filteredOption = this.code.valueChanges.pipe(
+      startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
-      startWith(''),
       map((value) => (value ? this._filter(value) : this.shopsList.slice()))
     );
   }
@@ -103,14 +103,17 @@ export class AccountCopyComponent implements OnInit {
   ) {
     firmNameFld.value = '';
 
-    const shop = this.shopsList.find(
-      (x) => x.code.toLowerCase() === code.toLowerCase()
-    );
-    if (shop) {
-      firmNameFld.value = shop.firmName;
-    } else if (code != '') {
-      control.setErrors({ InvalidCode: true });
+    if (code){
+      const shop = this.shopsList.find(
+        (x) => x.code.toLowerCase() === code.toLowerCase()
+      );
+      if (shop) {
+        firmNameFld.value = shop.firmName;
+        return;
+      }
     }
+
+    control.setErrors({ InvalidCode: true });
   }
 
   search() {

@@ -20,6 +20,7 @@ export class GroupsListComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  public filterValue = '';
   public groupType = GroupType;
   public groupListDS: MatTableDataSource<Group>;
   private exportColumns: string[] = ['code', 'name', 'groupName'];
@@ -62,8 +63,10 @@ export class GroupsListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.groupListUpdateSubscription.unsubscribe();
   }
 
-  applyFilter(value: string) {
-    this.groupListDS.filter = value;
+  applyFilter() {
+    this.groupListDS.filter = this.filterValue;
+
+    this.paginator.firstPage();
   }
 
   trackList(index, data) {

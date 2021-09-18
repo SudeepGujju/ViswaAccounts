@@ -61,7 +61,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": { 
+              "optimization": {
                 "scripts": true,
                 "styles": true,
                 "fonts": true

@@ -3,7 +3,7 @@ import {
   Component,
   OnInit,
   ViewChild,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -22,11 +22,11 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./account-list.component.scss'],
 })
 export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
-
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<Account>;
 
+  public filterValue = '';
   public shopsListDS: MatTableDataSource<Account>;
   private exportColumns: string[] = [
     'code',
@@ -36,7 +36,7 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
     'phone',
     'gst',
     'opngBalAmt',
-    'groupCode'
+    'groupCode',
   ];
 
   public columnsToDisplay: string[] = [
@@ -47,7 +47,7 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
     'phone',
     'gst',
     'opngBalAmt',
-    'groupCode'
+    'groupCode',
   ]; // ,'dno', 'strtNo', 'area', 'town', 'gst', 'dl1', 'dl2', 'phone', 'mailid'
 
   public userPersmissions: Permissions = null;
@@ -76,9 +76,11 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.shopsListDS = new MatTableDataSource<Account>();
     this.refresh();
 
-    this.accountListUpdateSubscription = this.accountSrvc.listUpdate$.subscribe( () => {
-      this.refresh();
-    });
+    this.accountListUpdateSubscription = this.accountSrvc.listUpdate$.subscribe(
+      () => {
+        this.refresh();
+      }
+    );
   }
 
   ngAfterViewInit() {
@@ -86,12 +88,14 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.shopsListDS.sort = this.sort;
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.accountListUpdateSubscription.unsubscribe();
   }
 
-  applyFilter(value: string) {
-    this.shopsListDS.filter = value;
+  applyFilter() {
+    this.shopsListDS.filter = this.filterValue;
+
+    this.paginator.firstPage();
   }
 
   trackList(index, data) {
@@ -120,7 +124,10 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   edit(account: Account) {
-    this.router.navigate( [{outlets: { dialog: ['dialog', 'account', 'edit', account._id]}}], {relativeTo: this.route.root, skipLocationChange: true} );
+    this.router.navigate(
+      [{ outlets: { dialog: ['dialog', 'account', 'edit', account._id] } }],
+      { relativeTo: this.route.root, skipLocationChange: true }
+    );
   }
 
   delete(account: Account) {
@@ -178,13 +185,13 @@ export class AccountListComponent implements OnInit, AfterViewInit, OnDestroy {
       phone: 'Phone',
       gst: 'GST',
       opngBalAmt: 'Opening Balance',
-      groupCode: 'Group Code'
+      groupCode: 'Group Code',
     };
 
     const data = [].concat(headings).concat(this.shopsListDS.filteredData);
     this.exportSrvc.exportAsExcelFile(data, filename, {
       filterKeys: this.exportColumns,
-      skipHeader: true
+      skipHeader: true,
     });
   }
 }

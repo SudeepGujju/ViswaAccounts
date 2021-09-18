@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators, FormGroupDirective, NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -10,7 +10,8 @@ import { AlertService } from 'app/modules/alert';
 @Component({
   selector: 'app-user-details',
   templateUrl: './user-details.component.html',
-  styleUrls: ['./user-details.component.scss']
+  styleUrls: ['./user-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserDetailsComponent implements OnInit {
 
@@ -20,6 +21,12 @@ export class UserDetailsComponent implements OnInit {
   public isCreateMode = false;
   public inProgress = false;
   public passwordErrorStateMatcher;
+  public readonly finYearList = [
+    {"text": "2018 - 2019", "value": "2018-2019"},
+    {"text": "2019 - 2020", "value": "2019-2020"},
+    {"text": "2020 - 2021", "value": "2020-2021"},
+    {"text": "2021 - 2022", "value": "2021-2022"}
+  ];
 
   constructor(private fb: FormBuilder, private userSrvc: UserService, private alrtSrvc: AlertService, private dialogRef: MatDialogRef<UserDetailsComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
 
@@ -40,7 +47,7 @@ export class UserDetailsComponent implements OnInit {
       phone: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10)]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(15)]],
       cpassword: ['', [Validators.required]], // Validators.minLength(8), Validators.maxLength(15)
-      finYear: ['2020-2021', [Validators.required]],
+      finYear: ['2021-2022', [Validators.required]],
       status: [this.userStatus.Active, [Validators.required]]
     }, {
       validators: [this.comaprePassword('password', 'cpassword')]

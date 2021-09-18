@@ -13,15 +13,15 @@
             <mat-icon>add</mat-icon>Add Files
         </button>
     </div>
-    <div *ngIf="resp">
+    <div *ngIf="uploadResponse">
         <mat-divider></mat-divider>
-        <div style="padding: 5px 0px;">Total: {{ resp.totalCount }}. Success: {{ resp.successCount }}. Failed: {{resp.failedCount}}.</div>
+        <div style="padding: 5px 0px;">Total: {{ uploadResponse.totalCount }}. Success: {{ uploadResponse.successCount }}. Failed: {{uploadResponse.failedCount}}.</div>
         <mat-list class="no-padding-list" style="max-height: 250px;overflow-y: auto;" role="list">
-            <mat-list-item style="padding: 0;" *ngFor="let record of resp.failedRecs" role="list-item">{{record.id}} - {{record.errMsg}}</mat-list-item>
+            <mat-list-item style="padding: 0;" *ngFor="let record of uploadResponse.failedRecs" role="list-item">{{record.id}} - {{record.errMsg}}</mat-list-item>
         </mat-list>
     </div>
 </div>
 <div mat-dialog-actions class="align-right">
-    <button type="button" mat-raised-button color="primary" [disabled]="!file || inProgress" (click)="uploadFile()">Upload<mat-icon class="rotate-180">save_alt</mat-icon></button>
+    <button type="button" mat-raised-button color="primary" [disabled]="!file || inProgress || fileUploaded" (click)="uploadFile()">Upload<mat-icon class="rotate-180">save_alt</mat-icon></button>
     <button type="button" mat-raised-button mat-dialog-close color="primary">Close</button>
 </div>

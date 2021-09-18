@@ -1,13 +1,38 @@
-import { AfterViewInit, Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy,
+} from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DateValidator, FromToDateValidation } from 'app/utils/date-validate';
 import { Observable, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
-import { CashRCreditType, CashRCreditTypeMapping, InventorTypeMapping, Inventory, InventoryType, Permissions, Account } from '../../../data-model';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  startWith,
+} from 'rxjs/operators';
+import {
+  CashRCreditType,
+  CashRCreditTypeMapping,
+  InventorTypeMapping,
+  Inventory,
+  InventoryType,
+  Permissions,
+  Account,
+} from '../../../data-model';
 import { AlertService } from '../../alert';
 import { AuthService } from '../../../services/auth.service';
 import { ExportService } from '../../../services/export.service';
@@ -22,8 +47,8 @@ import { Router, ActivatedRoute } from '@angular/router';
   templateUrl: './inventory-list.component.html',
   styleUrls: ['./inventory-list.component.scss'],
 })
-export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy {
-
+export class InventoryListComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -85,7 +110,6 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
   ) {}
 
   ngOnInit() {
-
     this.dateErrorStateMatcher = new CustomErrorStateMatcher('errorFromToDate');
 
     this.accountSrvc.getDropdownList().subscribe(
@@ -106,42 +130,46 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
       this.columnsToDisplay.push('oprts');
     }
 
-    this.inventorySrchForm = this.fb.group({
-      invntryType: [InventoryType.Sale, [Validators.required]],
-      fromDate: [
-        this.defaultDate,
-        [
-          Validators.required,
-          Validators.maxLength(14),
-          DateValidator(this.authSrvc.finYearStart, this.authSrvc.finYearEnd),
+    this.inventorySrchForm = this.fb.group(
+      {
+        invntryType: [InventoryType.Sale, [Validators.required]],
+        fromDate: [
+          this.defaultDate,
+          [
+            Validators.required,
+            Validators.maxLength(14),
+            DateValidator(this.authSrvc.finYearStart, this.authSrvc.finYearEnd),
+          ],
         ],
-      ],
-      toDate: [
-        this.defaultDate,
-        [
-          Validators.required,
-          Validators.maxLength(14),
-          DateValidator(this.authSrvc.finYearStart, this.authSrvc.finYearEnd),
+        toDate: [
+          this.defaultDate,
+          [
+            Validators.required,
+            Validators.maxLength(14),
+            DateValidator(this.authSrvc.finYearStart, this.authSrvc.finYearEnd),
+          ],
         ],
-      ],
-      code: [''],
-    },
-    {
-      validators: [FromToDateValidation('fromDate', 'toDate')]
-    });
+        code: [''],
+      },
+      {
+        validators: [FromToDateValidation('fromDate', 'toDate')],
+      }
+    );
 
     this.filteredOption = this.code.valueChanges.pipe(
+      startWith(''),
       debounceTime(300),
       distinctUntilChanged(),
-      startWith(''),
       map((value) => (value ? this._filter(value) : this.shopsList.slice()))
     );
 
     this.inventoryListDS = new MatTableDataSource<Inventory>();
 
-    this.inventoryListUpdateSubscription = this.invtrySrvc.listUpdate$.subscribe( () => {
-      this.search();
-    });
+    this.inventoryListUpdateSubscription = this.invtrySrvc.listUpdate$.subscribe(
+      () => {
+        this.search();
+      }
+    );
   }
 
   ngAfterViewInit() {
@@ -149,12 +177,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     this.inventoryListDS.sort = this.sort;
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.inventoryListUpdateSubscription.unsubscribe();
-  }
-
-  applyFilter(value: string) {
-    this.inventoryListDS.filter = value;
   }
 
   trackList(index, data) {
@@ -194,21 +218,29 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
   ) {
     firmNameFld.value = '';
 
-    const shop = this.shopsList.find(
-      (x) => x.code.toLowerCase() === code.toLowerCase()
-    );
-    if (shop) {
-      firmNameFld.value = shop.firmName;
-    } else if (code != '') {
-      control.setErrors({ InvalidCode: true });
+    if (code) {
+      const shop = this.shopsList.find(
+        (x) => x.code.toLowerCase() === code.toLowerCase()
+      );
+      if (shop) {
+        firmNameFld.value = shop.firmName;
+        return;
+      }
     }
+
+    control.setErrors({ InvalidCode: true });
   }
 
   search() {
     this.inProgress = true;
 
     this.invtrySrvc
-      .getSearchList(this.invntryType.value, this.fromDate.value, this.toDate.value, this.code.value)
+      .getSearchList(
+        this.invntryType.value,
+        this.fromDate.value,
+        this.toDate.value,
+        this.code.value
+      )
       .subscribe(
         (resp) => {
           this.inProgress = false;
@@ -223,7 +255,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
   formatData(records: Inventory[]) {
     if (records.length > 0) {
-      records.forEach(element => {
+      records.forEach((element) => {
         element.invntryName = InventorTypeMapping(element.invntryType);
         element.CashRCreditName = CashRCreditTypeMapping(element.cashRcredit);
       });
@@ -233,7 +265,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   edit(inventory: Inventory) {
-    this.router.navigate( [{outlets: { dialog: ['dialog', 'inventory', 'edit', inventory._id]}}], {relativeTo: this.route.root, skipLocationChange: true} );
+    this.router.navigate(
+      [{ outlets: { dialog: ['dialog', 'inventory', 'edit', inventory._id] } }],
+      { relativeTo: this.route.root, skipLocationChange: true }
+    );
   }
 
   delete(inventory: Inventory) {
@@ -269,13 +304,13 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
       totalAmt: 'Taxable Amount',
       totalPerAmt: 'GST Amount',
       roundingAmt: 'Rounding Amount',
-      totalInvcAmt: 'Invoice Amount'
+      totalInvcAmt: 'Invoice Amount',
     };
 
     const data = [].concat(headings).concat(this.inventoryListDS.filteredData);
     this.exportSrvc.exportAsExcelFile(data, filename, {
       filterKeys: this.exportColumns,
-      skipHeader: true
+      skipHeader: true,
     });
   }
 }

@@ -12,7 +12,7 @@ export class UserService {
   private listUpdateSubject: Subject<boolean> = new Subject();
   public listUpdate$: Observable<boolean>;
 
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient) {
     this.listUpdate$ = this.listUpdateSubject.asObservable();
   }
 
